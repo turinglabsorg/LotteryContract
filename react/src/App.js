@@ -13,6 +13,7 @@ class App extends Component {
     value: '0.2',
     message: '',
     amount: '0',
+    account: '',
   };
 
   async componentDidMount() {
@@ -20,7 +21,8 @@ class App extends Component {
     const address = lottery.options.address;
     const players = await lottery.methods.getPlayers().call();
     const balance = await web3.eth.getBalance(lottery.options.address);
-    this.setState({ manager, players, address, balance });
+    const [account] = await web3.eth.getAccounts();
+    this.setState({ manager, players, address, balance, account });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -36,13 +38,11 @@ class App extends Component {
   onSubmit = async event => {
     event.preventDefault();
 
-    const accounts = await web3.eth.getAccounts();
-
     this.setState({ message: 'Waiting for Ethereum Network' });
 
-    if (accounts[0]) {
+    if (this.state.account !== '') {
       await lottery.methods.enter().send({
-        from: accounts[0],
+        from: this.state.account,
         value: web3.utils.toWei(this.state.value, 'ether'),
       });
 
@@ -58,20 +58,14 @@ class App extends Component {
   };
 
   onClickWinner = async () => {
-    const accounts = await web3.eth.getAccounts();
-
     this.setState({ message: 'Waiting for Ethereum Network' });
 
-    if (accounts[0] && accounts[0] === this.state.manager) {
-      await lottery.methods.pickWinner().send({
-        from: accounts[0],
-      });
-      this.setState({ message: 'A winner has been picked!' });
-      const balance = await web3.eth.getBalance(lottery.options.address);
-      this.setState({ balance });
-    } else {
-      this.setState({ message: 'Ops, no account' });
-    }
+    await lottery.methods.pickWinner().send({
+      from: this.state.account,
+    });
+    this.setState({ message: 'A winner has been picked!' });
+    const balance = await web3.eth.getBalance(lottery.options.address);
+    this.setState({ balance });
   };
 
   handleChange = event => {
@@ -88,7 +82,10 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to HACK Lottery</h1>
           <div>
-            <button onClick={this.onClickWinner}>Pick a winner!</button>
+            {this.state.account !== '' &&
+              this.state.account === this.state.manager && (
+                <button onClick={this.onClickWinner}>Pick a winner!</button>
+              )}
           </div>
         </header>
         {this.state.address ? (

@@ -12,6 +12,7 @@ class App extends Component {
     balance: '',
     value: '0.2',
     message: '',
+    amount: '0',
   };
 
   async componentDidMount() {
@@ -22,6 +23,16 @@ class App extends Component {
     this.setState({ manager, players, address, balance });
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.balance !== this.state.balance) {
+      const amount = web3.utils.fromWei(this.state.balance, 'ether');
+
+      this.setState({
+        amount,
+      });
+    }
+  }
+
   onSubmit = async event => {
     event.preventDefault();
 
@@ -29,17 +40,21 @@ class App extends Component {
 
     this.setState({ message: 'Waiting for Ethereum Network' });
 
-    await lottery.methods.enter().send({
-      from: accounts[0],
-      value: web3.utils.toWei(this.state.value, 'ether'),
-    });
+    if (accounts[0]) {
+      await lottery.methods.enter().send({
+        from: accounts[0],
+        value: web3.utils.toWei(this.state.value, 'ether'),
+      });
 
-    this.setState({
-      message: "You've been entered with " + this.state.value + ' ETH!',
-    });
+      this.setState({
+        message: "You've been entered with " + this.state.value + ' ETH!',
+      });
 
-    const balance = await web3.eth.getBalance(lottery.options.address);
-    this.setState({ balance });
+      const balance = await web3.eth.getBalance(lottery.options.address);
+      this.setState({ balance });
+    } else {
+      this.setState({ message: 'Ops, no account' });
+    }
   };
 
   onClickWinner = async () => {
@@ -47,14 +62,16 @@ class App extends Component {
 
     this.setState({ message: 'Waiting for Ethereum Network' });
 
-    await lottery.methods.pickWinner().send({
-      from: accounts[0],
-    });
-
-    this.setState({ message: 'A winner has been picked!' });
-
-    const balance = await web3.eth.getBalance(lottery.options.address);
-    this.setState({ balance });
+    if (accounts[0]) {
+      await lottery.methods.pickWinner().send({
+        from: accounts[0],
+      });
+      this.setState({ message: 'A winner has been picked!' });
+      const balance = await web3.eth.getBalance(lottery.options.address);
+      this.setState({ balance });
+    } else {
+      this.setState({ message: 'Ops, no account' });
+    }
   };
 
   handleChange = event => {
@@ -63,7 +80,8 @@ class App extends Component {
 
   render() {
     /*web3.eth.getAccounts()
-						.then(console.log);*/ // visualizza gli account della versione di web3 di Metamask
+            .then(console.log);*/ // visualizza gli account della versione di web3 di Metamask
+
     return (
       <div className="App">
         <header className="App-header">
@@ -73,11 +91,24 @@ class App extends Component {
             <button onClick={this.onClickWinner}>Pick a winner!</button>
           </div>
         </header>
-        <p className="App-intro">
-          <br></br> deployed by {this.state.manager}
-          <br></br> on <a href={`https://rinkeby.etherscan.io/address/${this.state.address}`} target="_blank">{this.state.address}</a>
-          <br></br> and has {web3.utils.fromWei(this.state.balance, 'ether')} ETH from {this.state.players.length} player/s
-        </p>
+        {this.state.address ? (
+          <p className="App-intro">
+            <br /> deployed by {this.state.manager}
+            <br /> on{' '}
+            <a
+              href={`https://rinkeby.etherscan.io/address/${
+                this.state.address
+              }`}
+              target="_blank"
+            >
+              {this.state.address}
+            </a>
+            <br /> and has {this.state.amount} ETH from{' '}
+            {this.state.players.length} player/s
+          </p>
+        ) : (
+          <p>Devi autenticarti su Metamask</p>
+        )}
 
         <hr />
 

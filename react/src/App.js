@@ -71,7 +71,7 @@ class App extends Component {
         </header>
         <p className="App-intro">
 									<br></br> deployed by {this.state.manager}
-									<br></br> on <a href="https://etherscan.io/address/{this.state.address}" target="_blank">{this.state.address}</a>
+									<br></br> on <a href={`https://rinkeby.etherscan.io/address/${this.state.address}`} target="_blank">{this.state.address}</a>
 									<br></br> and has {web3.utils.fromWei(this.state.balance, 'ether')} ETH from {this.state.players.length} player/s
         </p>
 

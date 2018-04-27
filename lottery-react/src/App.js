@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import logo from './logo.svg';
+import logo from './logo.png';
 import web3 from './web3';
 import lottery from './lottery';
 

@@ -57,6 +57,10 @@ class App extends Component {
     this.setState({ balance });
   };
 
+  handleChange = event => {
+    this.setState({ value: event.target.value });
+  };
+
   render() {
     /*web3.eth.getAccounts()
 						.then(console.log);*/ // visualizza gli account della versione di web3 di Metamask
@@ -94,7 +98,7 @@ class App extends Component {
               step="0.01"
               type="number"
               value={this.state.value}
-              onChange={event => this.setState({ value: event.target.value })}
+              onChange={this.handleChange}
             />
             ETH<br />
             <button>Enter</button>

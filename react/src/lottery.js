@@ -56,16 +56,4 @@ const abi = [
   },
 ];
 
-const lottery = () => {
-  try {
-    if (web3) {
-      return new web3.eth.Contract(abi, address);
-    } else {
-      alert('Installa Metamask!');
-    }
-  } catch (err) {
-    console.log('ERROR', err);
-  }
-};
-
-export default lottery();
+export default new web3.eth.Contract(abi, address);

@@ -1,9 +1,10 @@
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
 const { interface, bytecode } = require('./compile');
+require('dotenv').config();
 
 const provider = new HDWalletProvider(
-  'under organ genre bar often inside fragile door uphold baby circle neck',
+  process.env.PASS,
   'https://rinkeby.infura.io/bs2nQFmZhWRahdDPrz2w'
 );
 const web3 = new Web3(provider);

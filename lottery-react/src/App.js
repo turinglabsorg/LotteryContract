@@ -40,6 +40,21 @@ class App extends Component {
 				this.setState({ balance });
 		};
 
+   onClick = async () =>{
+			const accounts = await web3.eth.getAccounts();
+
+			this.setState({ message: 'Waiting for Ethereum Network'});
+
+			await lottery.methods.pickWinner().send({
+					from: accounts[0]
+			});
+
+			this.setState({ message: 'A winner has been picked!'});
+
+			const balance = await web3.eth.getBalance(lottery.options.address);
+			this.setState({ balance });
+	};
+
   render() {
 			 /*web3.eth.getAccounts()
 						.then(console.log);*/ // visualizza gli account della versione di web3 di Metamask
@@ -50,11 +65,14 @@ class App extends Component {
           <h1 className="App-title">
 												Welcome to HACK Lottery
 											</h1>
+					<div>
+						<button onClick={this.onClick}>Pick a winner!</button>
+					</div>
         </header>
         <p className="App-intro">
 									<br></br> deployed by {this.state.manager}
 									<br></br> on <a href="https://etherscan.io/address/{this.state.address}" target="_blank">{this.state.address}</a>
-									<br></br> and has {web3.utils.fromWei(this.state.balance, 'ether')} ETH
+									<br></br> and has {web3.utils.fromWei(this.state.balance, 'ether')} ETH from {this.state.players.length} player/s
         </p>
 
 								<hr />
@@ -73,6 +91,7 @@ class App extends Component {
 												ETH<br/>
 												<button>Enter</button>
 												<br/><br/>
+												<hr/>
 												{this.state.message}
 										</div>
 								</form>

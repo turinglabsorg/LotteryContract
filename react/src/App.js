@@ -62,7 +62,7 @@ class App extends Component {
 
     this.setState({ message: 'Waiting for Ethereum Network' });
 
-    if (accounts[0]) {
+    if (accounts[0] && accounts[0] === this.state.manager) {
       await lottery.methods.pickWinner().send({
         from: accounts[0],
       });

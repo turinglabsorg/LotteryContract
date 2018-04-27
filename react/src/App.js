@@ -42,7 +42,7 @@ class App extends Component {
     this.setState({ balance });
   };
 
-  onClick = async () => {
+  onClickWinner = async () => {
     const accounts = await web3.eth.getAccounts();
 
     this.setState({ message: 'Waiting for Ethereum Network' });
@@ -70,14 +70,14 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to HACK Lottery</h1>
           <div>
-            <button onClick={this.onClick}>Pick a winner!</button>
+            <button onClick={this.onClickWinner}>Pick a winner!</button>
           </div>
         </header>
         <p className="App-intro">
           <br /> deployed by {this.state.manager}
           <br /> on{' '}
           <a
-            href="https://etherscan.io/address/{this.state.address}"
+            href={`https://etherscan.io/address/${this.state.address}`}
             target="_blank"
           >
             {this.state.address}

@@ -10,7 +10,7 @@ class App extends Component {
     players: [],
     address: '',
     balance: '',
-    value: '0.2',
+    value: '0.1',
     message: '',
     amount: '0',
     account: '',
@@ -64,8 +64,9 @@ class App extends Component {
       from: this.state.account,
     });
     this.setState({ message: 'A winner has been picked!' });
-    const balance = await web3.eth.getBalance(lottery.options.address);
-    this.setState({ balance });
+				const balance = await web3.eth.getBalance(lottery.options.address);
+				const players = await lottery.methods.getPlayers().call();
+				this.setState({ balance, players });
   };
 
   handleChange = event => {
@@ -91,7 +92,7 @@ class App extends Component {
         {this.state.address ? (
           <p className="App-intro">
             <br /> deployed by {this.state.manager}
-            <br /> on{' '}
+            <br /> at {' '}
             <a
               href={`https://rinkeby.etherscan.io/address/${
                 this.state.address
@@ -112,7 +113,7 @@ class App extends Component {
         <form onSubmit={this.onSubmit}>
           <h4>Enter Lottery</h4>
           <div>
-            <label>Amount of ether to enter, min is 0,01 ETH</label>
+            <label>Amount of ether to enter, min is 0.01 ETH</label>
             <br />
             <input
               min="0.01"
